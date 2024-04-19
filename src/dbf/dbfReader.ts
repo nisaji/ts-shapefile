@@ -1,7 +1,8 @@
 import { MemoryStream } from '../util/memoryStream';
 import { DbfFieldDescr, DbfFieldType, DbfHeader } from './dbfTypes';
-import { DbfDecoder, DbfDecoderFactory } from './dbfDecoderFactory';
+import { DbfDecoder, DbfDecoderFactory, IconvDecoder } from './dbfDecoderFactory';
 import 'buffer';
+import { encodingExists } from 'iconv-lite';
 
 const FieldTypeNames: any = {
   C: 'Character',
@@ -50,21 +51,30 @@ export class DbfReader {
       }
       return this.fromArrayBuffer(buffer, cpgBuf);
     } catch (err) {
-      throw new Error(`Failed to open .dbf file: ${err.message}`);
+      throw new Error(`Failed to open .dbf file: ${(err as Error).message}`);
     }
   }
 
-  public static async fromArrayBuffer(buffer: ArrayBuffer, cpgBuf?: ArrayBuffer): Promise<DbfReader> {
+  public static async fromArrayBuffer(
+    buffer: ArrayBuffer,
+    cpgBuf?: ArrayBuffer,
+    encoding?: string
+  ): Promise<DbfReader> {
     try {
       let decoder: DbfDecoder | undefined;
-      if (cpgBuf) {
+      if (encoding) {
+        if (!encodingExists(encoding)) {
+          throw new Error(`Encoding ${encoding} not supported`);
+        }
+        decoder = new IconvDecoder(encoding);
+      } else if (cpgBuf) {
         const cpgDecoder = new TextDecoder();
-        const cpgStr = await cpgDecoder.decode(cpgBuf);
+        const cpgStr = cpgDecoder.decode(cpgBuf);
         decoder = DbfDecoderFactory.fromCpgString(cpgStr);
       }
       return new DbfReader(buffer, decoder);
     } catch (err) {
-      throw new Error(`Unexpected error when opening .dbf: ${err.message}`);
+      throw new Error(`Unexpected error when opening .dbf: ${(err as Error).message}`);
     }
   }
 

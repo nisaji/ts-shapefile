@@ -21,7 +21,7 @@ export interface DbfDecoder {
   decode(str: Uint8Array): string;
 }
 
-class IconvDecoder implements DbfDecoder {
+export class IconvDecoder implements DbfDecoder {
   public readonly encoding: string;
 
   constructor(encoding: string) {
