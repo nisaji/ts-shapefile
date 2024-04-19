@@ -99,4 +99,16 @@ describe('DbfReader', () => {
       assert.equal(row[1], 'ÆØÅæøå');
     });
   });
+
+  describe('DbfReader', () => {
+    describe('DBF with cp932 encoding', () => {
+      it('should correctly set encoding to cp932', async () => {
+        // This test only check manual encoding setting
+        const fileMock = await openTestFile(`${cpDir}cp88591.dbf`);
+        const dbfBuffer = await fileMock.arrayBuffer();
+        const reader = await DbfReader.fromArrayBuffer(dbfBuffer, undefined, 'cp932');
+        assert.equal(reader.encoding, 'cp932');
+      });
+    });
+  });
 });
