@@ -50,8 +50,7 @@
   },
   "scripts": {
     "build": "rollup --config",
-    "postinstall": "npm run build && npm run cleanup",
-    "cleanup": "rimraf src tests *.ts *.tsx *.json !package.json",
+    "postinstall": "npm run build",
     "test": "cross-env TS_NODE_PROJECT=\"tsconfig.tests.json\"  mocha"
   },
   "dependencies": {
