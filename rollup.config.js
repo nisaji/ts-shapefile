@@ -4,7 +4,6 @@ import nodePolyfills from 'rollup-plugin-node-polyfills';
 import commonjs from '@rollup/plugin-commonjs';
 import del from 'rollup-plugin-delete';
 import json from '@rollup/plugin-json';
-import copy from 'rollup-plugin-copy';
 import packageJson from './package.json';
 
 export default {
@@ -37,15 +36,7 @@ export default {
     nodePolyfills(),
     typescript({ abortOnError: true, sourcemap: true, useTsconfigDeclarationDir: true }),
     commonjs(),
-    json(),
-    copy({
-      targets: [
-        {
-          src: './package.json',
-          dest: './dist'
-        }
-      ]
-    })
+    json()
   ],
   external: [...Object.keys(packageJson.dependencies || {}), ...Object.keys(packageJson.peerDependencies || {})]
 };
